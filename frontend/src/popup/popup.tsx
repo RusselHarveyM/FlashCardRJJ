@@ -23,6 +23,8 @@ const Popup = () => {
           const currentTab = tabs[0];
           const url = currentTab.url;
 
+          console.log("Current tab URL:", url);
+
           setLoading(true);
           cancelTokenSource = axios.CancelToken.source();
           axios
@@ -41,7 +43,7 @@ const Popup = () => {
                 console.log("Request canceled:", error.message);
               } else {
                 console.log(error);
-                setError("Error scraping website");
+                setError("Error Axios");
                 setLoading(false);
               }
             });
@@ -68,19 +70,19 @@ const Popup = () => {
       <h1 className="text-4xl text-green-500">RJJ</h1>
       {loading && <p className="flaschards">Loading...</p>}
       {error && <p>{error}</p>}
-      {/* {data && ( */}
-      <div className="flaschards">
-        {data.map((item) => (
-          <Flashcard
-            key={item.id}
-            question={item.flashcard.question}
-            answer={item.flashcard.answer}
-          />
-        ))}
-      </div>
-      {/* )} */}
+      {data && (
+        <div className="flaschards">
+          {data.map((item) => (
+            <Flashcard
+              key={item.id}
+              question={item.flashcard.question}
+              answer={item.flashcard.answer}
+            />
+          ))}
+        </div>
+      )}
       <button onClick={handleGenerate} className="btnGenerate">
-        Generate Flaschards
+        {generate ? "Stop Generating" : "Generate Flaschards"}
       </button>
     </div>
   );

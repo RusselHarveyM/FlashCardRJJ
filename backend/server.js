@@ -3,12 +3,12 @@ const cheerio = require("cheerio");
 const express = require("express");
 const app = express();
 
-const API_KEY = "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";
+const API_KEY = "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";
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
 app.get("/scrape", async (req, res) => {
   const url = req.query.url;
-
+  console.log("here");
   if (!url) {
     res.status(400).json({ error: "Missing url query parameter!" });
     return;
@@ -37,11 +37,11 @@ app.get("/scrape", async (req, res) => {
       pageContent = pageContent.replace(/(\r\n|\n|\r)/gm, "");
       pageContent = pageContent.trim();
     }
-
-    if (!title || !description || !pageContent) {
+    if (!title || !pageContent) {
       res.status(404).json({ error: "Data not found" });
       return;
     }
+    console.log("here2");
 
     let prompt = `Remove formatting and styling from the webpage ${url}. Extracted information: Title: ${title}, Description: ${description}, Page Content:`;
     const generatedReply = await generateChatResponse(prompt, pageContent);
