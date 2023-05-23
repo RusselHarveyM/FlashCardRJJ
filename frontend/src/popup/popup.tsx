@@ -5,89 +5,15 @@ import Flashcard from "./components/flashcard";
 
 const Popup = () => {
   const [data, setData] = useState([
-    {
-      id: 1,
-      flashcard: {
-        question: "What is the main role of the WHO?",
-        answer:
-          "To promote health and prevent the spread of disease worldwide.",
-      },
-    },
-    {
-      id: 2,
-      flashcard: {
-        question: "What is the WHO's emergency program responsible for?",
-        answer:
-          "Coordinating global responses to health emergencies, such as pandemics.",
-      },
-    },
-    {
-      id: 3,
-      flashcard: {
-        question: "How has the WHO assisted during the COVID-19 pandemic?",
-        answer:
-          "Convening global experts, providing technical guidance and coordinating the distribution of medical supplies and vaccines.",
-      },
-    },
-    {
-      id: 4,
-      flashcard: {
-        question: "What criticisms has the WHO faced?",
-        answer:
-          "Allegations of being too deferential to China and slow to issue key guidance during COVID-19 pandemic.",
-      },
-    },
-    {
-      id: 5,
-      flashcard: {
-        question:
-          "What reforms have been suggested to improve the WHO and global health preparedness?",
-        answer:
-          "Increased funding, governance structure reforms and greater cooperation between member countries.",
-      },
-    },
-    {
-      id: 6,
-      flashcard: {
-        question:
-          "Who is calling for increased global cooperation to prevent and respond to future health crises?",
-        answer: "Experts.",
-      },
-    },
-    {
-      id: 7,
-      flashcard: {
-        question: "What is the World Health Organization (WHO)?",
-        answer:
-          "A specialized agency of the United Nations responsible for global public health.",
-      },
-    },
-    {
-      id: 8,
-      flashcard: {
-        question:
-          "What is the WHO's responsibility in responding to health emergencies?",
-        answer: "To coordinate global responses through its emergency program.",
-      },
-    },
-    {
-      id: 9,
-      flashcard: {
-        question:
-          "What role did the WHO play in response to the COVID-19 pandemic?",
-        answer:
-          "Convened global experts, provided technical guidance, and coordinated distribution of medical supplies and vaccines.",
-      },
-    },
-    {
-      id: 10,
-      flashcard: {
-        question:
-          "What improvements have experts called for to strengthen the WHO?",
-        answer:
-          "Increased funding, reforms to governance, and greater cooperation between member countries.",
-      },
-    },
+    // {
+    //   id: 0,
+    //   flashcard: {
+    //     question:
+    //       "What improvements have experts called for to strengthen the WHO?",
+    //     answer:
+    //       "Increased funding, reforms to governance, and greater cooperation between member countries.",
+    //   },
+    // },
   ]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -153,7 +79,7 @@ const Popup = () => {
     <div>
       <h1 className="text-4xl text-green-500">SKEEM</h1>
       {loading && <p className="flaschards">Loading...</p>}
-      {error && <p>{error}</p>}
+      {!loading && error && <p>{error}</p>}
 
       {Object.keys(data).length > 0 && (
         <div className="flaschards">
@@ -167,8 +93,14 @@ const Popup = () => {
           ))}
         </div>
       )}
+      {!loading && Object.keys(data).length === 0 && (
+        <p>Failed to produce results.</p>
+      )}
+
       <button onClick={handleGenerate} className="btnGenerate">
-        {generate || !data ? "Stop Generating" : "Generate Flaschards"}
+        {generate && !data && !error
+          ? "Stop Generating"
+          : "Generate Flaschards"}
       </button>
     </div>
   );
