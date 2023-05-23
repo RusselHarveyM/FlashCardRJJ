@@ -1,23 +1,43 @@
 import React, { useState, useEffect } from "react";
 import "./popup.css";
 import axios from "axios";
+import { BsCardHeading } from "react-icons/bs";
+import { GrFormNext } from "react-icons/gr";
+import { GrFormPrevious } from "react-icons/gr";
 import Flashcard from "./components/flashcard";
 
 const Popup = () => {
-  const [data, setData] = useState([
-    // {
-    //   id: 0,
-    //   flashcard: {
-    //     question:
-    //       "What improvements have experts called for to strengthen the WHO?",
-    //     answer:
-    //       "Increased funding, reforms to governance, and greater cooperation between member countries.",
-    //   },
-    // },
-  ]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [generate, toggleGenerate] = useState(false);
+  const [currentData, setCurrentData] = useState(null);
+
+  const onNextHandler = () => {
+    setCurrentData((prev) => {
+      if (prev && prev.id) {
+        const currentId = prev.id - 1;
+        const nextID = currentId + 1;
+        if (data[nextID] === undefined) {
+          return prev;
+        }
+        return data[nextID];
+      }
+    });
+  };
+
+  const onPreviousHandler = () => {
+    setCurrentData((prev) => {
+      if (prev && prev.id) {
+        const currentId = prev.id - 1;
+        const prevID = currentId - 1;
+        if (data[prevID] === undefined) {
+          return prev;
+        }
+        return data[prevID];
+      }
+    });
+  };
 
   useEffect(() => {
     let cancelTokenSource;
@@ -46,6 +66,7 @@ const Popup = () => {
             )
             .then((response) => {
               setData(response.data);
+              setCurrentData(response.data[0]);
               setLoading(false);
             })
             .catch((error) => {
@@ -77,31 +98,47 @@ const Popup = () => {
 
   return (
     <div>
-      <h1 className="text-4xl text-green-500">SKEEM</h1>
-      {loading && <p className="flaschards">Loading...</p>}
-      {!loading && error && <p>{error}</p>}
-
-      {Object.keys(data).length > 0 && (
-        <div className="flaschards">
-          {data.map((item) => (
-            <Flashcard
-              key={item.id}
-              id={item.id}
-              question={item.flashcard.question}
-              answer={item.flashcard.answer}
-            />
-          ))}
-        </div>
+      <h1 className="team-text">SKEEM</h1>
+      {loading && <p className="overlay">Loading...</p>}
+      {!loading && error && <p className="overlay">{error}</p>}
+      {Object.keys(data).length === 0 && currentData !== null && (
+        <p className="overlay2">Failed to produce result.</p>
       )}
-      {!loading && Object.keys(data).length === 0 && (
-        <p>Failed to produce results.</p>
-      )}
+      <div className="flaschards">
+        {Object.keys(data).length > 0 && (
+          <Flashcard
+            key={currentData.id}
+            id={currentData.id}
+            answer={currentData.flashcard.answer}
+            question={currentData.flashcard.question}
+          />
+        )}
+      </div>
 
-      <button onClick={handleGenerate} className="btnGenerate">
-        {generate && !data && !error
-          ? "Stop Generating"
-          : "Generate Flaschards"}
-      </button>
+      <div className="btn-prev-next">
+        <button onClick={onPreviousHandler}>
+          <GrFormPrevious size="40px" />
+        </button>
+        {Object.keys(data).length > 0 ? (
+          <p>
+            {currentData.id} of {data.length}
+          </p>
+        ) : (
+          <p>0 of 0</p>
+        )}
+        <button onClick={onNextHandler}>
+          <GrFormNext size="40px" style={{ color: "white" }} />
+        </button>
+      </div>
+
+      <div className="btn-flex">
+        <button onClick={handleGenerate} className="btnGenerate">
+          <BsCardHeading size="40px" />
+          {generate || (Object.keys(data).length === 0 && error)
+            ? "Stop Generating"
+            : "Generate Flaschards"}
+        </button>
+      </div>
     </div>
   );
 };

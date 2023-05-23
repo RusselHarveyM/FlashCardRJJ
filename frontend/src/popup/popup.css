@@ -2,42 +2,129 @@ body {
   height: 500px;
   width: 400px;
   display: flex;
+  background-color: #682c0e;
   justify-content: center;
   text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   padding: 1rem;
 }
 
 .btnGenerate {
-  background-color: #77ff00;
+  background-color: #f9e0ae;
   padding: 1.2rem 1.6rem;
   border-radius: 1rem;
+  font-weight: bold;
   font-size: larger;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 300px;
+  height: 75px;
+  font-size: 20px;
   margin-top: 1.5rem;
+}
+
+.btn-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .flaschards {
   display: flex;
   flex-direction: column;
   margin-top: 1.5rem;
-  background-color: #d6ffb2;
-  /* height: 300px;
-  width: 350px; */
-  /* overflow-y: scroll; */
+  background-color: #fff0d1;
+  height: 220px;
   border-radius: 20px;
   gap: 20px;
 }
 
 .flaschardItem {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #77ff00;
+  background-color: #f9e0ae;
   /* padding: 1.2rem 3rem; */
-  height: 150px;
+  height: 220px;
+  padding: 1rem;
   cursor: pointer;
   border-radius: 20px;
 }
+.question-container span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.question-container {
+  position: absolute;
+  top: 110px;
+  font-weight: bold;
+  left: 40px;
+  font-size: 18px;
+  display: flex;
+  width: 115px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flaschardItem h1 {
+  font-size: 1.3rem;
+  font-weight: 450;
+}
 
 .revealed {
-  background-color: #81cb40;
+  background-color: #f3f7ef;
+}
+
+.team-text {
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: white;
+  text-shadow: 5px 5px #1a1515;
+}
+
+.btn-prev-next {
+  display: flex;
+  margin-top: 15px;
+  width: 370px;
+  height: 40px;
+  font-size: 12px;
+  justify-content: space-between;
+  color: white;
+  align-items: center;
+}
+
+.btn-prev-next p {
+  font-size: 1rem;
+}
+
+.btn-prev-next button {
+  border: 2px solid #b69d6c;
+  background-color: #f9e0ae;
+  border-radius: 20px;
+}
+
+.overlay {
+  position: absolute;
+  left: 150px;
+  background-color: #ffffffde;
+  border-radius: 20px;
+  padding: 1rem 1.3rem;
+  z-index: 100;
+}
+
+.overlay2 {
+  position: absolute;
+  left: 110px;
+  background-color: #ffffffde;
+  border-radius: 20px;
+  padding: 1rem 1.3rem;
+  z-index: 100;
 }

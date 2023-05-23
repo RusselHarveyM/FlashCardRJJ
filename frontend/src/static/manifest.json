@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "RJJ",
-  "description": "react-boilerplate",
+  "description": "Team RJJ Mini Project",
   "version": "1.0.0",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "React Boilerplate",
+    "default_title": "Team RJJ Mini Project",
     "default_icon": "icon.png"
   },
   "chrome_url_overrides": {
