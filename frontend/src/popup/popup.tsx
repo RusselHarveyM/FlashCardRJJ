@@ -4,7 +4,7 @@ import axios from "axios";
 import Flashcard from "./components/flashcard";
 
 const Popup = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([{ id: "none" }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [generate, toggleGenerate] = useState(false);
@@ -70,7 +70,8 @@ const Popup = () => {
       <h1 className="text-4xl text-green-500">RJJ</h1>
       {loading && <p className="flaschards">Loading...</p>}
       {error && <p>{error}</p>}
-      {data && (
+      {!loading && <p className="flaschards">{data[0].id}</p>}
+      {/* {Object.keys(data).length > 0 && (
         <div className="flaschards">
           {data.map((item) => (
             <Flashcard
@@ -80,7 +81,7 @@ const Popup = () => {
             />
           ))}
         </div>
-      )}
+      )} */}
       <button onClick={handleGenerate} className="btnGenerate">
         {generate ? "Stop Generating" : "Generate Flaschards"}
       </button>

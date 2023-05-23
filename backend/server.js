@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const express = require("express");
 const app = express();
 
-const API_KEY = "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";
+const API_KEY = "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";
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
 app.get("/scrape", async (req, res) => {
@@ -53,7 +53,7 @@ app.get("/scrape", async (req, res) => {
 
     console.log("flaschards::  ", flashcards);
 
-    res.json({ flashcards });
+    res.json(flashcards);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error scraping the website" });
@@ -146,16 +146,7 @@ async function generateFlashcards(prompt, pageContent, amount) {
     } catch (error) {
       console.error("Error:", error);
       // throw error;
-      const word = "Rate limit";
-      const regex = new RegExp(`\\b${word}\\b`, "i");
-      const result = regex.test(error.message);
-      if (result === true) {
-        console.log("Rate limit, please wait for 20 seconds...");
-        await new Promise((resolve) => setTimeout(resolve, 20000));
-      } else {
-        console.log("One Flashcard failed to be generated!");
-      }
-
+      rateLimit(error);
       continue;
     }
     console.log("One Flashcard succesfully generated!");
@@ -164,6 +155,18 @@ async function generateFlashcards(prompt, pageContent, amount) {
 
   return flashcards;
 }
+
+const rateLimit = async (error) => {
+  const word = "Rate limit";
+  const regex = new RegExp(`\\b${word}\\b`, "i");
+  const result = regex.test(error.message);
+  if (result === true) {
+    console.log("Rate limit, please wait for 20 seconds...");
+    await new Promise((resolve) => setTimeout(resolve, 20000));
+  } else {
+    console.log(error ?? "One Flashcard failed to be generated!");
+  }
+};
 
 async function generateChatResponse(prompt, pageContent) {
   const sections = splitIntoSections(pageContent, 4096); // Split pageContent into sections
@@ -196,8 +199,8 @@ async function generateChatResponse(prompt, pageContent) {
 
       chatHistory.push({ role: "assistant", content: reply });
     } catch (error) {
-      console.error("Error:", error.response.data);
-      throw error;
+      rateLimit(error.response.data);
+      // throw error;
     }
   }
 

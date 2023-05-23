@@ -26,5 +26,6 @@ body {
 
 .flaschardItem {
   background-color: #77ff00;
+  width: 50px;
   padding: 1.2rem 1.6rem;
 }

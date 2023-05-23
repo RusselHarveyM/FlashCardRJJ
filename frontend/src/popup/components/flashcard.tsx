@@ -1,4 +1,5 @@
 import * as React from "react";
+import "../popup.css";
 
 const Flaschard = (props) => {
   return (
