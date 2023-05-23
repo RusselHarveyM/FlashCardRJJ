@@ -1,5 +1,5 @@
 body {
-  height: 400px;
+  height: 500px;
   width: 400px;
   display: flex;
   justify-content: center;
@@ -17,15 +17,25 @@ body {
 
 .flaschards {
   display: flex;
+  flex-direction: column;
   margin-top: 1.5rem;
   background-color: #d6ffb2;
-  height: 200px;
+  height: 300px;
   width: 350px;
   overflow-y: scroll;
+  gap: 20px;
 }
 
 .flaschardItem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #77ff00;
-  width: 50px;
-  padding: 1.2rem 1.6rem;
+  /* padding: 1.2rem 3rem; */
+  height: 150px;
+  cursor: pointer;
+}
+
+.revealed {
+  background-color: #81cb40;
 }

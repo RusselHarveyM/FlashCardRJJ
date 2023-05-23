@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const express = require("express");
 const app = express();
 
-const API_KEY = "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";
+const API_KEY = "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";
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
 app.get("/scrape", async (req, res) => {
