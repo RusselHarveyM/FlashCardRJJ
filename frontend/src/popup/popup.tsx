@@ -9,35 +9,53 @@ const Popup = () => {
   const [generate, toggleGenerate] = useState(false);
 
   useEffect(() => {
-    // Function to get the current tab's URL
-    const getCurrentTabUrl = () => {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        // Check for errors
-        if (chrome.runtime.lastError || tabs.length === 0) {
-          setError("Error getting current tab URL");
-          return;
-        }
+    let cancelTokenSource;
 
-        const currentTab = tabs[0];
-        const url = currentTab.url;
+    if (generate) {
+      const getCurrentTabUrl = () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (chrome.runtime.lastError || tabs.length === 0) {
+            setError("Error getting current tab URL");
+            return;
+          }
 
-        // Make a GET request to the server-side endpoint with the dynamic URL
-        setLoading(true);
-        //   axios
-        //     .get(`http://localhost:3000/scrape?url=${encodeURIComponent(url)}`)
-        //     .then((response) => {
-        //       setData(response.data);
-        //       setLoading(false);
-        //     })
-        //     .catch((error) => {
-        //       console.log(error);
-        //       setError("Error scraping website");
-        //       setLoading(false);
-        //     });
-      });
+          const currentTab = tabs[0];
+          const url = currentTab.url;
+
+          setLoading(true);
+          cancelTokenSource = axios.CancelToken.source();
+          axios
+            .get(
+              `http://localhost:3000/scrape?url=${encodeURIComponent(url)}`,
+              {
+                cancelToken: cancelTokenSource.token,
+              }
+            )
+            .then((response) => {
+              setData(response.data);
+              setLoading(false);
+            })
+            .catch((error) => {
+              if (axios.isCancel(error)) {
+                console.log("Request canceled:", error.message);
+              } else {
+                console.log(error);
+                setError("Error scraping website");
+                setLoading(false);
+              }
+            });
+        });
+      };
+
+      getCurrentTabUrl();
+    }
+
+    // Cleanup function to cancel any pending requests
+    return () => {
+      if (cancelTokenSource) {
+        cancelTokenSource.cancel("Component unmounted");
+      }
     };
-
-    getCurrentTabUrl();
   }, [generate]);
 
   const handleGenerate = () => {
