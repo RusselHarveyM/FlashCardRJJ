@@ -1,4 +1,25 @@
 body {
   height: 400px;
   width: 400px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+.btnGenerate {
+  background-color: #77ff00;
+  padding: 1.2rem 1.6rem;
+  border-radius: 1rem;
+  font-size: larger;
+  margin-top: 1.5rem;
+}
+
+.flaschards {
+  display: flex;
+  margin-top: 1.5rem;
+  background-color: #d6ffb2;
+  height: 200px;
+  width: 350px;
+  overflow-y: scroll;
 }

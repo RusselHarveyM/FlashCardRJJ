@@ -23,17 +23,17 @@ const Popup = () => {
 
         // Make a GET request to the server-side endpoint with the dynamic URL
         setLoading(true);
-        axios
-          .get(`http://localhost:3000/scrape?url=${encodeURIComponent(url)}`)
-          .then((response) => {
-            setData(response.data);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.log(error);
-            setError("Error scraping website");
-            setLoading(false);
-          });
+        //   axios
+        //     .get(`http://localhost:3000/scrape?url=${encodeURIComponent(url)}`)
+        //     .then((response) => {
+        //       setData(response.data);
+        //       setLoading(false);
+        //     })
+        //     .catch((error) => {
+        //       console.log(error);
+        //       setError("Error scraping website");
+        //       setLoading(false);
+        //     });
       });
     };
 
@@ -46,11 +46,13 @@ const Popup = () => {
 
   return (
     <div>
-      <h1 className="text-4xl text-green-500">Team RJJ FlashCard Generator</h1>
-      {loading && <p>Loading...</p>}
+      <h1 className="text-4xl text-green-500">RJJ</h1>
+      {loading && <p className="flaschards">Loading...</p>}
       {error && <p>{error}</p>}
-      {!loading && !error && data && <></>}
-      <button onClick={handleGenerate}>Generate!!</button>
+      {!loading && !error && data && <div className="flaschards"></div>}
+      <button onClick={handleGenerate} className="btnGenerate">
+        Generate Flaschards
+      </button>
     </div>
   );
 };

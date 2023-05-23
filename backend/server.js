@@ -38,7 +38,7 @@ app.get("/scrape", async (req, res) => {
       return;
     }
 
-    const prompt = `Remove the formatting and styling from ${url}: Title: ${title}, Description: ${description}, Page Content: `;
+    const prompt = `Remove formatting and styling from the webpage ${url}. Extracted information: Title: ${title}, Description: ${description}, Page Content:`;
     const generatedReply = await generateChatResponse(prompt, pageContent);
 
     console.log("ChatGPT Reply:", generatedReply);
@@ -51,7 +51,7 @@ app.get("/scrape", async (req, res) => {
 });
 
 async function generateChatResponse(prompt, pageContent) {
-  const API_KEY = "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";
+  const API_KEY = "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";
   const API_URL = "https://api.openai.com/v1/chat/completions";
 
   const sections = splitIntoSections(pageContent, 4096); // Split pageContent into sections
