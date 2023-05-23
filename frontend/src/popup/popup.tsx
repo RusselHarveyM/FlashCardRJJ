@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./popup.css";
 import axios from "axios";
+import Flashcard from "./components/flashcard";
 
 const Popup = () => {
   const [data, setData] = useState(null);
@@ -67,7 +68,17 @@ const Popup = () => {
       <h1 className="text-4xl text-green-500">RJJ</h1>
       {loading && <p className="flaschards">Loading...</p>}
       {error && <p>{error}</p>}
-      {!loading && !error && data && <div className="flaschards"></div>}
+      {/* {data && ( */}
+      <div className="flaschards">
+        {data.map((item) => (
+          <Flashcard
+            key={item.id}
+            question={item.flashcard.question}
+            answer={item.flashcard.answer}
+          />
+        ))}
+      </div>
+      {/* )} */}
       <button onClick={handleGenerate} className="btnGenerate">
         Generate Flaschards
       </button>

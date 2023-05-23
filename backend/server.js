@@ -3,6 +3,9 @@ const cheerio = require("cheerio");
 const express = require("express");
 const app = express();
 
+const API_KEY = "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";
+const API_URL = "https://api.openai.com/v1/chat/completions";
+
 app.get("/scrape", async (req, res) => {
   const url = req.query.url;
 
@@ -28,32 +31,141 @@ app.get("/scrape", async (req, res) => {
       pageContent = $("div.article-content").html();
     }
 
-    pageContent = pageContent.replace(/<style([\s\S]*?)<\/style>/gi, "");
-    pageContent = pageContent.replace(/<[^>]+>/g, "");
-    pageContent = pageContent.replace(/(\r\n|\n|\r)/gm, "");
-    pageContent = pageContent.trim();
+    if (pageContent) {
+      pageContent = pageContent.replace(/<style([\s\S]*?)<\/style>/gi, "");
+      pageContent = pageContent.replace(/<[^>]+>/g, "");
+      pageContent = pageContent.replace(/(\r\n|\n|\r)/gm, "");
+      pageContent = pageContent.trim();
+    }
 
     if (!title || !description || !pageContent) {
       res.status(404).json({ error: "Data not found" });
       return;
     }
 
-    const prompt = `Remove formatting and styling from the webpage ${url}. Extracted information: Title: ${title}, Description: ${description}, Page Content:`;
+    let prompt = `Remove formatting and styling from the webpage ${url}. Extracted information: Title: ${title}, Description: ${description}, Page Content:`;
     const generatedReply = await generateChatResponse(prompt, pageContent);
 
     console.log("ChatGPT Reply:", generatedReply);
+    prompt = `Please generate flashcards for the webpage at ${url}. Each flashcard should be in the form of a JSON object inside an array with "question" and "answer" properties. The "question" property should contain a brief summary or title for the flashcard, while the "answer" property should contain a few words that provide a concise explanation. The flashcards should be easy to understand and provide a clear and concise overview of the content on the webpage.`;
 
-    res.json({ title, description, pageContent, generatedReply });
+    const flashcards = await generateFlashcards(prompt, generatedReply, 3);
+
+    console.log("flaschards::  ", flashcards);
+
+    res.json({ flashcards });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error scraping the website" });
   }
 });
 
-async function generateChatResponse(prompt, pageContent) {
-  const API_KEY = "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";
-  const API_URL = "https://api.openai.com/v1/chat/completions";
+async function generateFlashcards(prompt, pageContent, amount) {
+  const sections = splitIntoSections(pageContent, 4096); // Split pageContent into sections
+  let flashCardID = 1;
 
+  let chatHistory = [
+    { role: "system", content: "You are a helpful assistant." },
+    { role: "user", content: prompt },
+  ];
+
+  for (const section of sections) {
+    chatHistory.push({ role: "user", content: section });
+  }
+
+  try {
+    const response = await axios.post(
+      API_URL,
+      {
+        messages: chatHistory,
+        model: "gpt-3.5-turbo",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      }
+    );
+
+    const { choices } = response.data;
+    const assistantReplies = choices.map((choice) => choice.message.content);
+
+    for (const reply of assistantReplies) {
+      chatHistory.push({ role: "assistant", content: reply });
+    }
+  } catch (error) {
+    console.error("Error:", error.response.data);
+    throw error;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 20000));
+
+  // Generate flashcards
+  const flashcards = [];
+  for (let i = 0; i < amount; i++) {
+    // Wait for 10 seconds before generating each flashcard
+
+    try {
+      const response = await axios.post(
+        API_URL,
+        {
+          messages: chatHistory,
+          model: "gpt-3.5-turbo",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+        }
+      );
+
+      const { choices } = response.data;
+      const reply = choices[0].message.content;
+      // let result;
+      console.log("reply >>>>> ", reply);
+
+      // try {
+      //   result = "[" + reply.split("\n").join(",") + "]";
+      // } catch (error) {
+      //   console.log("ErrorReply:", error);
+      // }
+
+      // console.log("reply >>>>> ", result);
+      // Store flashcard in JSON object with question and answer properties
+
+      const replyJSON = JSON.parse(reply);
+      console.log("replyJSON >>>>> ", replyJSON);
+      replyJSON.forEach((element) => {
+        flashcards.push({
+          id: flashCardID++,
+          flashcard: element,
+        });
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      // throw error;
+      const word = "Rate limit";
+      const regex = new RegExp(`\\b${word}\\b`, "i");
+      const result = regex.test(error.message);
+      if (result === true) {
+        console.log("Rate limit, please wait for 20 seconds...");
+        await new Promise((resolve) => setTimeout(resolve, 20000));
+      } else {
+        console.log("One Flashcard failed to be generated!");
+      }
+
+      continue;
+    }
+    console.log("One Flashcard succesfully generated!");
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+  }
+
+  return flashcards;
+}
+
+async function generateChatResponse(prompt, pageContent) {
   const sections = splitIntoSections(pageContent, 4096); // Split pageContent into sections
 
   let chatHistory = [

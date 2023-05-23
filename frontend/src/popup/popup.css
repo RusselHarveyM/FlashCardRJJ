@@ -23,3 +23,8 @@ body {
   width: 350px;
   overflow-y: scroll;
 }
+
+.flaschardItem {
+  background-color: #77ff00;
+  padding: 1.2rem 1.6rem;
+}
