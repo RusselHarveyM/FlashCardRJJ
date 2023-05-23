@@ -13,7 +13,7 @@ const Flaschard = (props) => {
       className={`flaschardItem ${isRevealed ? "revealed" : ""}`}
       onClick={onClickReveal}
     >
-      {isRevealed ? <h1>{props.question}</h1> : <h1>{props.answer}</h1>}
+      {!isRevealed ? <h1>{props.question}</h1> : <h1>{props.answer}</h1>}
     </div>
   );
 };
