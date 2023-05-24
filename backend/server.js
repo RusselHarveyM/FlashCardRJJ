@@ -7,8 +7,8 @@ const API_KEY = "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";
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
 app.get("/scrape", async (req, res) => {
+  console.log("Scraping...");
   const url = req.query.url;
-  console.log("here");
   if (!url) {
     res.status(400).json({ error: "Missing url query parameter!" });
     return;
@@ -41,14 +41,13 @@ app.get("/scrape", async (req, res) => {
       res.status(404).json({ error: "Data not found" });
       return;
     }
-    console.log("here2");
 
     let prompt = `Remove formatting and styling from the webpage ${url}. Extracted information: Title: ${title}, Description: ${description}, Page Content:`;
     const generatedReply = await generateChatResponse(prompt, pageContent);
 
     console.log("ChatGPT Reply:", generatedReply);
-    prompt = `Please generate flashcards for the webpage at ${url}. Each flashcard should be in the form of a JSON object inside an array with "question" and "answer" properties. The "question" property should contain a brief summary or title for the flashcard, while the "answer" property should contain a few words that provide a concise explanation. The flashcards should be easy to understand and provide a clear and concise overview of the content on the webpage.`;
-
+    prompt =
+      'Please start generating flashcards from scratch. Each flashcard should be in the form of a JSON object inside an array with "question" and "answer" properties. The "question" property should contain a brief summary or title for the flashcard, while the "answer" property should contain a few words that provide a concise explanation. The flashcards should be easy to understand and provide a clear and concise overview of the content on the webpage. Do not consider any previous responses when generating these flashcards.';
     const flashcards = await generateFlashcards(prompt, generatedReply, 3);
 
     console.log("flaschards::  ", flashcards);
@@ -65,7 +64,7 @@ async function generateFlashcards(prompt, pageContent, amount) {
   let flashCardID = 1;
 
   let chatHistory = [
-    { role: "system", content: "You are a helpful assistant." },
+    { role: "system", content: "You are a smart flashcard generator." },
     { role: "user", content: prompt },
   ];
 
@@ -123,19 +122,16 @@ async function generateFlashcards(prompt, pageContent, amount) {
 
       const { choices } = response.data;
       const reply = choices[0].message.content;
-      // let result;
+      let result;
       console.log("reply >>>>> ", reply);
 
-      // try {
-      //   result = "[" + reply.split("\n").join(",") + "]";
-      // } catch (error) {
-      //   console.log("ErrorReply:", error);
-      // }
+      try {
+        result = reply.match(/\[[^\]]*\]/);
+      } catch (error) {
+        console.log("ErrorMatching >>>>> ", error);
+      }
 
-      // console.log("reply >>>>> ", result);
-      // Store flashcard in JSON object with question and answer properties
-
-      const replyJSON = JSON.parse(reply);
+      const replyJSON = JSON.parse(result);
       console.log("replyJSON >>>>> ", replyJSON);
       replyJSON.forEach((element) => {
         flashcards.push({

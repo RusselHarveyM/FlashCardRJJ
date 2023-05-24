@@ -41,7 +41,13 @@ const Popup = () => {
 
   useEffect(() => {
     let cancelTokenSource;
-
+    if (
+      localStorage.getItem("storedData") !== null &&
+      JSON.parse(localStorage.getItem("storedData")).length !== 0
+    ) {
+      setData(JSON.parse(localStorage.getItem("storedData")));
+      setCurrentData(JSON.parse(localStorage.getItem("storedData"))[0]);
+    }
     if (generate) {
       const getCurrentTabUrl = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -67,9 +73,13 @@ const Popup = () => {
             .then((response) => {
               setData(response.data);
               setCurrentData(response.data[0]);
+              localStorage.removeItem("storedData");
+              localStorage.setItem("storedData", JSON.stringify(response.data));
               setLoading(false);
+              toggleGenerate(!generate);
             })
             .catch((error) => {
+              toggleGenerate(!generate);
               if (axios.isCancel(error)) {
                 console.log("Request canceled:", error.message);
               } else {
@@ -96,14 +106,22 @@ const Popup = () => {
     toggleGenerate(!generate);
   };
 
+  const onClearContent = () => {
+    localStorage.removeItem("storedData");
+    setData([]);
+    setCurrentData(null);
+  };
+
   return (
     <div>
       <h1 className="team-text">SKEEM</h1>
       {loading && <p className="overlay">Loading...</p>}
       {!loading && error && <p className="overlay">{error}</p>}
-      {Object.keys(data).length === 0 && currentData !== null && (
-        <p className="overlay2">Failed to produce result.</p>
-      )}
+      {Object.keys(data).length === 0 &&
+        !loading &&
+        !error &&
+        !currentData === null &&
+        generate && <p className="overlay2">Failed to produce result.</p>}
       <div className="flaschards">
         {Object.keys(data).length > 0 && (
           <Flashcard
@@ -134,9 +152,10 @@ const Popup = () => {
       <div className="btn-flex">
         <button onClick={handleGenerate} className="btnGenerate">
           <BsCardHeading size="40px" />
-          {generate || (Object.keys(data).length === 0 && error)
-            ? "Stop Generating"
-            : "Generate Flaschards"}
+          {generate ? "Stop Generating" : "Generate Flashcards"}
+        </button>
+        <button onClick={onClearContent} className="btnClear">
+          Clear
         </button>
       </div>
     </div>
